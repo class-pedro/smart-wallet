@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email      String   @unique
+  cellphone  String
+  document   String   @unique
+  wallet Wallet?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("users")
+}
+
+model Wallet {
+  id String @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance Int
+  expenses Expense[]
+  amounts Amount[]
+  creditCards CreditCard[]
+  debitCards DebitCard[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("wallets")
+}
+
+model CreditCard {
+  id String @id @default(uuid())
+  walletId String
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  cardName String
+  limit Int
+  dueDate DateTime // vencimento
+  closingDate DateTime // fechamento
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  expenses Expense[]
+    
+  @@map("credit_cards")
+}
+
+model DebitCard {
+  id String @id @default(uuid())
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId String
+  cardName String
+  balance Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  expenses Expense[]
+  amounts Amount[]
+    
+  @@map("debit_cards")
+}
+
+model Expense {
+  id String @id @default(uuid())
+  description String
+  coast Int // centavos
+  paymentType String // cred, debt, dh
+  paymentMethod String // vista, parcelado, recorrente
+  paymentDate DateTime // data de pagamento
+  purchaseDate DateTime // data de compra
+  installments Int? // 
+  status String // em aberto, pago, em atraso
+  walletId     String?   @unique
+  creditCardId String?   @unique
+  debitCardId  String?   @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  wallet       Wallet?   @relation(fields: [walletId], references: [id])
+  creditCard   CreditCard? @relation(fields: [creditCardId], references: [id])
+  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id])
+    
+  @@map("expenses")
+}
+
+model Amount {
+  id String @id @default(uuid())
+  desciption String
+  amountType String // pix, dinheiro vivo
+  walletId     String?   @unique
+  debitCardId  String?   @unique
+
+  wallet       Wallet?   @relation(fields: [walletId], references: [id])
+  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id])
+    
+  @@map("amounts")
+}
