@@ -12,11 +12,19 @@ export class DebitCardsService extends CardsService {
   ) {
     super(walletsService);
   }
+
   async create(createDebitCardDto: CreateCardDto, requesterId: string) {
     const { walletId } = createDebitCardDto;
 
-    await this.canCreateCard(requesterId, walletId);
+    await this.canManipulateCard(requesterId, walletId);
 
     return await this.debitCardsRepository.create(createDebitCardDto);
+  }
+
+  async delete(cardId: string, requesterId: string) {
+    const { walletId } = await this.debitCardsRepository.getById(cardId);
+    await this.canManipulateCard(requesterId, walletId);
+
+    await this.debitCardsRepository.delete(cardId);
   }
 }
