@@ -5,13 +5,13 @@ import { WalletsService } from '../wallets/wallets.service';
 export class CardsService {
   constructor(private readonly walletsService: WalletsService) {}
 
-  async canCreateCard(requesterId: string, walletId: string) {
+  async canManipulateCard(requesterId: string, walletId: string) {
     const { userId: walletOwnerId } =
       await this.walletsService.getById(walletId);
 
     if (requesterId !== walletOwnerId) {
       throw new UnauthorizedException(
-        'You cannot create a card in a wallet that is not yours',
+        'You cannot modify a resource in a wallet that is not yours',
       );
     }
   }

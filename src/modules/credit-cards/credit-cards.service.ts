@@ -15,8 +15,15 @@ export class CreditCardsService extends CardsService {
   async create(createCreditCardDto: CreateCreditCardDto, requesterId: string) {
     const { walletId } = createCreditCardDto;
 
-    await this.canCreateCard(requesterId, walletId);
+    await this.canManipulateCard(requesterId, walletId);
 
     return await this.creditCardsRepository.create(createCreditCardDto);
+  }
+
+  async delete(cardId: string, requesterId: string) {
+    const { walletId } = await this.creditCardsRepository.getById(cardId);
+    await this.canManipulateCard(requesterId, walletId);
+
+    await this.creditCardsRepository.delete(cardId);
   }
 }

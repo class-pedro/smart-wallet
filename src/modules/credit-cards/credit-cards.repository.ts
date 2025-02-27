@@ -9,4 +9,20 @@ export class CreditCardsRepository {
   async create(createCreditCardDto: CreateCreditCardDto) {
     return await this.prisma.creditCard.create({ data: createCreditCardDto });
   }
+
+  async delete(cardId: string) {
+    await this.prisma.creditCard.delete({
+      where: {
+        id: cardId,
+      },
+    });
+  }
+
+  async getById(cardId: string) {
+    return await this.prisma.creditCard.findFirst({
+      where: {
+        id: cardId,
+      },
+    });
+  }
 }
