@@ -36,6 +36,9 @@ export class UsersService {
   }
 
   async getById(userId: string) {
-    return await this.usersRepository.getById(userId);
+    const user = await this.usersRepository.getById(userId);
+    const { password, ...userData } = user;
+
+    return userData;
   }
 }
