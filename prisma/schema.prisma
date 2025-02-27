@@ -89,9 +89,9 @@ model Expense {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
-  wallet       Wallet?   @relation(fields: [walletId], references: [id])
-  creditCard   CreditCard? @relation(fields: [creditCardId], references: [id])
-  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id])
+  wallet       Wallet?   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  creditCard   CreditCard? @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id], onDelete: Cascade)
     
   @@map("expenses")
 }
@@ -103,8 +103,8 @@ model Amount {
   walletId     String?   @unique
   debitCardId  String?   @unique
 
-  wallet       Wallet?   @relation(fields: [walletId], references: [id])
-  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id])
+  wallet       Wallet?   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  debitCard    DebitCard?  @relation(fields: [debitCardId], references: [id], onDelete: Cascade)
     
   @@map("amounts")
 }
